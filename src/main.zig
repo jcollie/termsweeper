@@ -464,7 +464,6 @@ const Board = struct {
 };
 
 const TermSweeper = struct {
-    ready: bool,
     gpa_alloc: std.mem.Allocator,
     tty: *vaxis.Tty,
     vx: *vaxis.Vaxis,
@@ -475,7 +474,6 @@ const TermSweeper = struct {
     pub fn init(gpa_alloc: std.mem.Allocator, tty: *vaxis.Tty, vx: *vaxis.Vaxis) !TermSweeper {
         const board = try Board.init(gpa_alloc, 10, 10, 0.12);
         return .{
-            .ready = false,
             .gpa_alloc = gpa_alloc,
             .tty = tty,
             .vx = vx,
@@ -487,33 +485,7 @@ const TermSweeper = struct {
 
     pub fn deinit(self: *TermSweeper) void {
         self.board.deinit();
-        // self.vx.deinit(self.gpa_alloc, self.tty.anyWriter());
-        // self.tty.deinit();
     }
-
-    // pub fn run(self: *TermSweeper) !void {
-    // var loop: vaxis.Loop(Event) = .{
-    //     .tty = &self.tty,
-    //     .vaxis = &self.vx,
-    // };
-    // try loop.init();
-    // try loop.start();
-    // defer loop.stop();
-
-    // try self.vx.enterAltScreen(self.tty.anyWriter());
-    // try self.vx.queryTerminal(self.tty.anyWriter(), 1 * std.time.ns_per_s);
-    // try self.vx.setMouseMode(self.tty.anyWriter(), true);
-
-    // while (!self.should_quit) {
-    //     const event = loop.nextEvent();
-    //     try self.update(event, arena_alloc);
-    //     try self.draw(arena_alloc);
-    //     var buffered = self.tty.bufferedWriter();
-    //     try self.vx.render(buffered.writer().any());
-    //     try buffered.flush();
-    //     if (self.should_quit) return;
-    // }
-    // }
 
     pub fn update(self: *TermSweeper, event: vaxis.xev.Event) !bool {
         switch (event) {
@@ -548,7 +520,6 @@ const TermSweeper = struct {
     }
 
     pub fn draw(self: *TermSweeper) !void {
-        // if (!self.ready) return;
         self.board_mutex.lock();
         defer self.board_mutex.unlock();
 
@@ -582,7 +553,6 @@ const TermSweeper = struct {
         }
         win.clear();
 
-        // const board = vaxis.widgets.alignment.center(win, self.board.width * 2 + 2, self.board.height);
         const board = win.child(
             .{
                 .x_off = offset: {
@@ -856,6 +826,10 @@ pub fn main() !void {
     try vx.queryTerminalSend(tty.anyWriter());
     try vx.setMouseMode(tty.anyWriter(), true);
 
+    const ws = try vaxis.Tty.getWinsize(tty.fd);
+    try vx.resize(gpa_alloc, tty.anyWriter(), ws);
+    try app.draw();
+
     const query_timer = try xev.Timer.init();
     var query_timer_cmp: xev.Completion = .{};
     query_timer.run(&loop, &query_timer_cmp, 1000, TermSweeper, &app, queryTimerCallback);
@@ -865,7 +839,6 @@ pub fn main() !void {
     periodic_timer.run(&loop, &peridoic_timer_cmp, 500, TermSweeper, &app, periodicTimerCallback);
 
     try loop.run(.until_done);
-    // try app.run();
 }
 
 fn queryTimerCallback(
@@ -894,7 +867,6 @@ fn eventCallback(
     switch (event) {
         .winsize => |ws| {
             watcher.vx.resize(app.gpa_alloc, watcher.tty.anyWriter(), ws) catch @panic("TODO");
-            app.ready = true;
             app.draw() catch @panic("TODO");
         },
         else => {
