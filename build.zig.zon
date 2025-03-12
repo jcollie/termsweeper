@@ -1,18 +1,17 @@
 .{
-    .name = "termsweeper",
-
-    .version = "0.0.0",
-
-    .minimum_zig_version = "0.13.0",
+    .name = .termsweeper,
+    .version = "0.2.0",
+    .fingerprint = 0xe3f4eef12e357a5d,
+    .minimum_zig_version = "0.14.0",
 
     .dependencies = .{
         .vaxis = .{
-            .url = "git+https://github.com/rockorager/libvaxis?ref=main#c89b75ebe3c9b993913465a8b16e8e185a340fa6",
-            .hash = "12209e3e6a758023f77c35c88723209ca78f3e8f386cef27ea73ab5ea36d6f21e14f",
+            .url = "git+https://github.com/rockorager/libvaxis?ref=main#1e24e0dfb509e974e1c8713bcd119d0ae032a8c7",
+            .hash = "vaxis-0.1.0-BWNV_MHyCAARemSCSwwc3sA1etNgv7ge0BCIXspX6CZv",
         },
         .xev = .{
-            .url = "git+https://github.com/mitchellh/libxev#f6a672a78436d8efee1aa847a43a900ad773618b",
-            .hash = "12207b7a5b538ffb7fb18f954ae17d2f8490b6e3778a9e30564ad82c58ee8da52361",
+            .url = "git+https://github.com/mitchellh/libxev?ref=main#3df9337a9e84450a58a2c4af434ec1a036f7b494",
+            .hash = "libxev-0.0.0-86vtc-ziEgDbLP0vihUn1MhsxNKY4GJEga6BEr7oyHpz",
         },
     },
 

@@ -6,7 +6,6 @@ pub fn build(b: *std.Build) void {
     const vaxis = b.dependency("vaxis", .{
         .target = target,
         .optimize = optimize,
-        .libxev = true,
     });
 
     const xev = b.dependency("xev", .{
